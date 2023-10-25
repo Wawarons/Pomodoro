@@ -1,11 +1,10 @@
 .tasks-container {
-    width: fit-content;
-    max-width: 500px;
+    min-width: 350px;
     height: fit-content;
     border-radius: 10px;
-    padding: 5px 25px 15px;
+    padding: 15px;
     margin: 0 15px;
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px) brightness(70%);
     color: #ffffff;
     text-align: left;
 }
@@ -18,9 +17,13 @@
 }
 
 .tasks-container__header--title {
-    padding: 0;
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid #ffffff;
     margin: 0 0 10px 0;
-    color: var(--purple-dark-color);
+    color: var(--orange-color);
+    box-shadow: rgba(0, 0, 0, 0.25) 0 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0 0 0 1px inset;
+    text-align: center;
 }
 
 .task {
@@ -30,7 +33,7 @@
     margin: 5px;
     align-items: center;
     font-weight: bold;
-    color: #000000;
+    color: #ffffff;
 }
 
 
@@ -40,9 +43,13 @@
     color: #ffffff;
 }
 
-.task div:hover {
+.task svg:hover {
     cursor: pointer;
     color: var(--purple-light-color);
+}
+
+.task svg {
+    margin: 0 2px;
 }
 
 .task__name {
@@ -58,7 +65,9 @@
 .tasks-container__input--task {
     width: 75%;
     background: #0000001B;
-    color: #000000;
+    color: #ffffff;
+    font-weight: bold;
+    font-family: TimeBurner, sans-serif;
     border-radius: 5px;
     padding: 5px;
     border: none;
@@ -70,4 +79,35 @@
     color: red;
     font-size: 14px;
     margin: 5px;
+}
+
+.tasks-container__input {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    margin: 15px auto 0 auto;
+}
+
+.tasks-container__input-icons {
+    width: fit-content;
+    margin-left: 10px;
+    transition: .3s;
+}
+
+.tasks-container__input-icons svg:hover {
+    cursor: pointer;
+    color: var(--purple-light-color);
+}
+
+.tasks-container__input-icons svg {
+    margin: 3px;
+}
+
+#fox_pen {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: auto;
+    text-align: center;
 }

@@ -1,6 +1,9 @@
 import React, {FormEvent, useEffect, useRef, useState} from 'react';
 import style from '@/app/styles/tasks.module.css'
-import Task from "@/app/components/Tasks/Task";
+import TaskItem from "@/app/components/Tasks/Task";
+import Image from 'next/image';
+import foxPen from '../../../../public/images/fox_tomato_no_bg.png';
+import {GoIssueClosed, GoXCircle} from 'react-icons/go'
 
 type Task = {
     name: string,
@@ -10,8 +13,8 @@ type Task = {
 }
 
 const TasksContainer = () => {
-
-    const localTasks = localStorage.getItem('tasks');
+    
+    const localTasks = localStorage?.getItem('tasks');
     const [tasks, setTasks] = useState<Array<Task>>(localTasks ? JSON.parse(localTasks):[]);
     const errorTaskMessage = useRef<HTMLParagraphElement>(null);
 
@@ -50,20 +53,29 @@ const TasksContainer = () => {
     }
 
     return (
-        <div className={style['tasks-container']}>
+        <div className={`${style['tasks-container']} animationBackdrop`}>
             <div className={style['tasksContainer__header']}>
                 <h2 className={style['tasks-container__header--title']}>Tasks</h2>
             </div>
             <div className={style['tasks-container__task']}>
                 {
-                    tasks ? tasks.sort((taskA, taskB) => {return compareTask(taskA, taskB)}).map((task, index) => {
-                        return <Task name={task.name} state={task.state} key={`task_${index}`}/>
+                    tasks.length ? tasks.sort((taskA, taskB) => {return compareTask(taskA, taskB)}).map((task, index) => {
+                        return <TaskItem name={task.name} state={task.state} id={task.id} key={`task_${index}`}/>
                         })
-                        :null
+                        :<div id={`${style['fox_pen']}`}>
+                            <Image src={foxPen} alt="fox with pen" width={150} height={150}/>
+                            <h4>Push some tasks here</h4>
+                        </div>
                 }
             </div>
             <form onSubmit={handleSubmit}>
-                <input type="text" pattern='.{3,150}' placeholder="new task" name="input-task" className={style['tasks-container__input--task']}/>
+                <div className={style['tasks-container__input']}>
+                    <input type="text" pattern='.{3,150}' placeholder="new task" name="input-task" className={style['tasks-container__input--task']}/>
+                    <div className={style['tasks-container__input-icons']}>
+                        <GoIssueClosed/>
+                        <GoXCircle/>
+                    </div>
+                </div>
                 <p ref={errorTaskMessage} className={`${style['tasks-container__error-task']} hidden`}>Task length must be between 3 & 150 characters.</p>
             </form>
         </div>
