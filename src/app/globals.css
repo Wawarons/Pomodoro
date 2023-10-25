@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz@6..96&family=Rajdhani&display=swap');
+
+@font-face {
+    font-family: TimeBurner;
+    src: url('./fonts/Timeburner-xJB8.ttf');
+}
+
+@font-face {
+    font-family: TimeBurnerBold;
+    src: url('./fonts/TimeburnerBold-peGR.ttf');
+}
+
+:root  {
+    --pink-color: #E20A4A;
+    --light-grey-color: #D9D9D9;
+    --light-grey-2-color: #E0CDEE;
+    --purple-light-color: #623B7A;
+    --purple-dark-color: #3E1747;
+    --orange-color: #FC6900;
+}
+
+body {
+    font-family: TimeBurner, sans-serif;
+    background: url('/images/background_library.jpg') no-repeat center center fixed;
+    background-size: cover;
+
+}
+
+#title_site {
+    position: relative;
+    top: 0;
+    left: 0;
+    color: var(--purple-dark-color);
+    font-size: 1.85em;
+    margin: 0 0 25px 0;
+    width: fit-content;
+    text-shadow: 0 0 2px #ffffff;
+}
+
+.home-timer-container {
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    margin: 0 auto;
+}
+
+.hidden {
+    position: absolute;
+    visibility: hidden;
+}
+
+.home-timer-container__timer-container {
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px) brightness(70%);
+}
+
+@media (max-width: 1150px) {
+    .home-timer-container {
+        margin: 0 auto;
+        position: unset;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 750px) {
+
+    .home-timer-container {
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .home-timer-container__timer-container {
+        width: 90%;
+    }
+}
+@media (min-width: 750px) {
+    .home-timer-container__timer-container {
+        width: 25%;
+        min-width: 450px;
+    }
+}

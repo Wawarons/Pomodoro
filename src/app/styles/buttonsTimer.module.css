@@ -1,0 +1,66 @@
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0 auto;
+    max-width: fit-content;
+}
+
+.buttons__button {
+    display: flex;
+    width: 40px;
+    height: 40px;
+    margin: 0 5px;
+    background: white;
+    border: var(--orange-color) solid 2px;
+    border-radius: 50%;
+    box-shadow: 0 0 2px #0000008f;
+    align-items: center;
+    justify-content: center;
+}
+
+.buttons__button svg {
+    width: 60%;
+    height: 60%;
+    color: var(--pink-color);
+}
+
+.buttons__confirm--div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px;
+    width: fit-content;
+    height: fit-content;
+    background: #ffffff;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+
+.buttons__confirm--div h3 {
+    margin: 2px;
+    padding: 0;
+}
+
+.buttons__confirm--div div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.buttons__confirm--div:first-of-type p {
+    background: var(--light-grey-color);
+    border: #623B7A solid 2px;
+}
+
+.buttons__confirm--div div p {
+    background: var(--purple-light-color);
+    width: 50px;
+    padding: 5px;
+    margin: auto;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
