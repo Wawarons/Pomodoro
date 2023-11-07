@@ -52,3 +52,16 @@
     background: var(--pink-color);
     height: 2px;
 }
+
+.informations {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    color: var(--orange-color);
+    cursor: pointer;
+    transition: .2s;
+}
+
+.informations:hover {
+    color: var(--purple-light-color);
+}

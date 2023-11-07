@@ -1,85 +1,157 @@
-import React, {FormEvent, useEffect, useRef, useState} from 'react';
-import style from '@/app/styles/tasks.module.css'
-import TaskItem from "@/app/components/Tasks/Task";
-import Image from 'next/image';
-import foxPen from '../../../../public/images/fox_tomato_no_bg.png';
-import {GoIssueClosed, GoXCircle} from 'react-icons/go'
+import React, { useState, useEffect, useCallback, FormEvent } from "react";
+import style from "@/app/styles/tasks.module.css";
+import { Task } from "@/app/type";
+import TaskItem from "./TaskItem";
+import Image from "next/image";
+import {
+  TbDots,
+  TbPlaystationX,
+  TbSquareCheckFilled,
+  TbWashDry,
+} from "react-icons/tb";
 
-type Task = {
-    name: string,
-    state: 'to do' | 'pending' | 'done',
-    priority: number,
-    id: number
-}
-
+/**
+ * Container who contains all the tasks
+ * @returns JSX Element
+ */
 const TasksContainer = () => {
-    
-    const localTasks = localStorage?.getItem('tasks');
-    const [tasks, setTasks] = useState<Array<Task>>(localTasks ? JSON.parse(localTasks):[]);
-    const errorTaskMessage = useRef<HTMLParagraphElement>(null);
+  //Liste des tâches
+  const [taskslist, setTasksList] = useState<Array<Task> | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    const handleSubmit = (e: FormEvent): void => {
-        e.preventDefault();
-        let form : HTMLFormElement = (e.target as HTMLFormElement);
-        let taskName: string = form['input-task'].value;
-        if(taskName.length >= 2 && taskName.length <= 150) {
-            let newTask: Task;
-            newTask = {
-                name: taskName,
-                state: 'to do',
-                priority: 0,
-                id: tasks.length ? tasks[tasks.length - 1].id + 1:1
-            };
-            setTasks([...tasks, newTask]);
-            (errorTaskMessage.current as HTMLElement).classList.add('hidden');
-            form['input-task'].value = "";
-            localStorage.setItem('tasks', JSON.stringify([...tasks, newTask]));
-        }else {
-            (errorTaskMessage.current as HTMLElement).classList.remove('hidden');
-        }
+  useEffect(() => {
+    //Récupération des anciennes tâches
+    let localStorageTasks: string | null = window.localStorage.getItem("tasks");
+    //Si anciennes tâches
+    if (localStorageTasks && !taskslist) {
+      //Parsé les anciennes tâches
+      const localStorageTasksParsed: Array<Task> =
+        JSON.parse(localStorageTasks);
+      //Si parsé ajouté à task
+      localStorageTasksParsed ? setTasksList(localStorageTasksParsed) : setTasksList([]);
+      setLoading(false);
+    } else {
+      //Update the localStorage with the new values
+      window.localStorage.setItem("tasks", JSON.stringify(taskslist));
     }
+  }, [taskslist]);
 
-    function compareTask(taskA : null | Task = null, taskB: null | Task = null) : 1 | -1 {
-        if(taskA && taskB){
-            if (taskA.state === 'to do' && taskB.state != 'to do')
-                return -1;
-            else if (taskA.state === 'pending' && taskB.state === 'done')
-                return -1;
-            else if(taskA.priority < taskB.priority)
-                return -1;
-            return 1;
-        }
-        return 1;
-    }
+  /**
+   * useCallback function for update state of a task
+   * @param targetTask @type Task
+   */
+  const handleChangeStateTask = useCallback(
+    (targetTask: Task) => {
+      targetTask.state = targetTask.state === 2 ? 0 : targetTask.state + 1;
+      let newTasksList = taskslist?.filter((task) => task.id != targetTask.id);
+      newTasksList ? setTasksList([...newTasksList, targetTask]) : null;
+    },
+    [taskslist]
+  );
 
-    return (
-        <div className={`${style['tasks-container']} animationBackdrop`}>
-            <div className={style['tasksContainer__header']}>
-                <h2 className={style['tasks-container__header--title']}>Tasks</h2>
-            </div>
-            <div className={style['tasks-container__task']}>
-                {
-                    tasks.length ? tasks.sort((taskA, taskB) => {return compareTask(taskA, taskB)}).map((task, index) => {
-                        return <TaskItem name={task.name} state={task.state} id={task.id} key={`task_${index}`}/>
-                        })
-                        :<div id={`${style['fox_pen']}`}>
-                            <Image src={foxPen} alt="fox with pen" width={150} height={150}/>
-                            <h4>Push some tasks here</h4>
-                        </div>
-                }
-            </div>
-            <form onSubmit={handleSubmit}>
-                <div className={style['tasks-container__input']}>
-                    <input type="text" pattern='.{3,150}' placeholder="new task" name="input-task" className={style['tasks-container__input--task']}/>
-                    <div className={style['tasks-container__input-icons']}>
-                        <GoIssueClosed/>
-                        <GoXCircle/>
-                    </div>
+  /**
+   * useCallback function for delete a task
+   * @param targetTask @type Task
+   */
+  const handleDeleteTask = useCallback(
+    (targetTask: Task) => {
+      let newTasksList = taskslist?.filter((task) => task.id != targetTask.id);
+      if (newTasksList) {
+        !newTasksList.length ? window.localStorage.removeItem("tasks") : null;
+        setTasksList(newTasksList);
+      }
+    },
+    [taskslist]
+  );
+
+  /**
+   * Add new task
+   * @param targetTask @type Task
+   */
+  const handleAddTask = useCallback(
+    (formEvent: FormEvent) => {
+      formEvent.preventDefault();
+      let taskInput: HTMLInputElement = (formEvent.target as HTMLFormElement).task;
+      let newTask: Task = {
+        name: taskInput.value ? taskInput.value : "new Task",
+        state: 0,
+        priority: 0,
+        id: taskslist ? taskslist?.length + 1 : 0,
+      };
+      if (newTask && taskslist) setTasksList([...taskslist, newTask]);
+      taskInput.value = '';
+    },
+    [taskslist]
+  );
+
+  return (
+    <div className={style["tasks-container"]}>
+      <h3 className={style["tasks-container__header--title"]}>Tasks</h3>
+      {taskslist?.length ? (
+        taskslist
+        //Sort tasks list
+          .sort((taskA, taskB) => {
+            return taskA.priority < taskB.priority || taskA.state < taskB.state
+              ? -1
+              : 1;
+          })
+          .map((task: Task, index: number) => {
+            return (
+                // Task
+              <div className={style.task} key={`task_${task.id}`}>
+                <div>
+                  <div className={style["task__delete"]} onClick={() => handleDeleteTask(task)}>
+                    <TbPlaystationX />
+                  </div>
+                  <div onClick={() => handleChangeStateTask(task)}>
+                    {task.state === 0 ? (
+                      <TbWashDry />
+                    ) : task.state === 1 ? (
+                      <TbDots />
+                    ) : (
+                      <TbSquareCheckFilled />
+                    )}
+                  </div>
                 </div>
-                <p ref={errorTaskMessage} className={`${style['tasks-container__error-task']} hidden`}>Task length must be between 3 & 150 characters.</p>
-            </form>
+                <TaskItem name={task.name} state={task.state} />
+              </div>
+            );
+          })
+      ) : (
+        //If no tasks
+        <div id={`${style["fox_pen"]}`}>
+          {loading ?
+          <Image src="Loader.svg" alt="loader" width={50} height={50} />:
+          <>
+          <Image
+            src="/images/fox_tomato_no_bg.webp"
+            alt="fox with pen"
+            width={150}
+            height={150}
+          />
+          <h4>Push some tasks here</h4>
+          </>
+          }
+
         </div>
-    );
+      )}
+      {/* Form for add a new task */}
+      <form onSubmit={handleAddTask}>
+        <input
+          type="text"
+          name="task"
+          id=""
+          className={style["tasks-container__input--task"]}
+        />
+        <input
+          type="submit"
+          value="add"
+          className={style["tasks-container__input-btn"]}
+          disabled={taskslist === null}
+        />
+      </form>
+    </div>
+  );
 };
 
 export default TasksContainer;

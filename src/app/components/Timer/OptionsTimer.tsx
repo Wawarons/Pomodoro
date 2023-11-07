@@ -4,6 +4,13 @@ import {PiBookOpenTextLight, PiCoffeeLight} from 'react-icons/pi';
 import {SiBuymeacoffee} from 'react-icons/si';
 import {TimeContext} from "@/app/TimerContext";
 
+/**
+ * slides bar for set up options timer.
+ *  - Work time
+ *  - Short break time
+ *  - Long break    
+ * @returns JSX Elements
+ */
 const OptionsTimer = () => {
 
     const context = useContext(TimeContext);
@@ -13,6 +20,10 @@ const OptionsTimer = () => {
 
     const {timer, updateTimer} = context;
 
+    /**
+     * Handle the change event and set up the new value to the timer
+     * @param event @type ChangeEvent
+     */
     function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
         switch ((event.target.name)) {
             case 'work_time_option':

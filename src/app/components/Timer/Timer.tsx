@@ -1,19 +1,30 @@
 import React, { useContext, useEffect, useState } from "react";
-import style from "../../styles/timer.module.css";
+import style from "@/app/styles/timer.module.css";
 import { PiBookOpenTextLight, PiCoffeeLight } from "react-icons/pi";
 import { SiBuymeacoffee } from "react-icons/si";
+import {HiOutlineInformationCircle} from 'react-icons/hi';
 import { TimeContext } from "@/app/TimerContext";
+import Informations from "./Informations";
 
+/**
+ * Timer component 
+ * @returns JSX Element
+ */
 const Timer = () => {
   const context = useContext(TimeContext);
+  const [showInformations, setShowInformations] = useState(false);
 
   if (!context)
     throw new Error("ShowTimeComponent must be used within Provider");
 
   const { timer, updateTimer } = context;
   const [timeLeft, setTimeLeft] = useState<number>(timer.workTime * 60);
-  const [stepSession, setStepSession] = useState(timer.stepSession);
+  const stepSession = timer.stepSession;
 
+  /**
+   * Update the step value 
+   * @param step new step value
+   */
   const updateDisplayTime = (step: "work" | "short break" | "long break") => {
     if (step === "work") {
       setTimeLeft(timer.workTime * 60);
@@ -63,6 +74,12 @@ const Timer = () => {
     }
   }, [timeLeft, timer]);
 
+  /**
+   * Convert milliseconds to mm:ss (m: minutes, s:seconds)
+   * @param secondsLeft number Time left in milliseconds 
+   * @type number
+   * @returns 
+   */
   function millisToMinutesAndSeconds(secondsLeft: number): {
     minutes: number | string;
     seconds: number | string;
@@ -84,7 +101,9 @@ const Timer = () => {
 
   return (
     <>
+      {showInformations ? <Informations />:null}
       <div className={style["time-container"]}>
+        <HiOutlineInformationCircle className={style.informations} title="informations" onClick={()=>setShowInformations(!showInformations)}/>
         <div className={style["time-container__title--session"]}>
         <h2>{timer.stepSession}</h2>
           {timer.stepSession === "work" ? (

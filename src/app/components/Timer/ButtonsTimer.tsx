@@ -4,12 +4,18 @@ import {BsFillPauseFill, BsPlayFill} from 'react-icons/bs';
 import {TimeContext} from "@/app/TimerContext";
 import {IoIosSquare} from "react-icons/io";
 
+/**
+ * Buttons for the timers Start/Stop/Reset 
+ * @returns JSX Elements
+ */
 const ButtonsTimer = () => {
     const context = useContext(TimeContext);
     if (!context)
         throw new Error('ShowTimeComponent must be used within Provider');
     const {timer, updateTimer} = context;
     const confirmDiv = useRef<HTMLDivElement | null>(null);
+    
+    //Reset the timer 
     const handleClick = useCallback((reset: boolean) => {
         if (reset) {
             updateTimer({stepSession: 'work', sessionStart: false, isBreak: true, sessionDo: 0});

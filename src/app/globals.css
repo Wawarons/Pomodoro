@@ -21,7 +21,7 @@
 
 body {
     font-family: TimeBurner, sans-serif;
-    background: url('/images/background_library.jpg') no-repeat center center fixed;
+    background: url('/images/background_library.webp') no-repeat center center fixed;
     background-size: cover;
 
 }
@@ -30,11 +30,10 @@ body {
     position: relative;
     top: 0;
     left: 0;
-    color: var(--purple-dark-color);
+    color: #fff;
     font-size: 1.85em;
     margin: 0 0 25px 0;
     width: fit-content;
-    text-shadow: 0 0 2px #ffffff;
 }
 
 .home-timer-container {
@@ -82,4 +81,32 @@ body {
         width: 25%;
         min-width: 450px;
     }
+}
+
+
+footer {
+    color: #fff;
+    padding: 0;
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.footer-copyright {
+    font-family: 14px;
+    width: fit-content;
+    margin: 0;
+    padding: 0;
+}
+
+.footer-documents {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    justify-content: space-between;
+}
+
+.footer-documents * {
+    margin: 0 5px;
 }

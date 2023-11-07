@@ -1,13 +1,17 @@
 "use client";
 import Timer from "@/app/components/Timer/Timer";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext } from "react";
 import GoalSession from "@/app/components/Timer/GoalSession";
 import OptionsTimer from "@/app/components/Timer/OptionsTimer";
 import ButtonsTimer from "@/app/components/Timer/ButtonsTimer";
 import { TimeContext } from "@/app/TimerContext";
-import TasksContainer from "@/app/components/Tasks/TasksContainer";
+import TasksContainer from "./components/Tasks/TasksContainer";
 import MusicComponent from "./components/Music/MusicComponent";
 
+/**
+ * Home page 
+ * @returns JSX Elements
+ */
 export default function Home() {
   const context = useContext(TimeContext);
   if (!context)
@@ -27,9 +31,7 @@ export default function Home() {
           {!timer.sessionStart ? <OptionsTimer /> : null}
           <ButtonsTimer />
         </div>
-        <div>
           <TasksContainer />
-        </div>
       </div>
     </>
   );

@@ -1,5 +1,5 @@
 'use client'
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import style from '../../styles/goal-session.module.css';
 import {GoGoal, GoCheckCircleFill} from 'react-icons/go';
 import {TimeContext} from "@/app/TimerContext";
