@@ -1,7 +1,9 @@
 import "./globals.css";
+import NavBar from "./components/NavBar";
 import React from "react";
 import type { Metadata } from "next";
 import { TimerProvider } from "@/app/TimerContext";
+import { AuthContextProvider } from "./Authcontext";
 
 /**
  * Metadata attributs
@@ -23,6 +25,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <AuthContextProvider>
+        <NavBar/>
         <TimerProvider>{children}</TimerProvider>
         <footer>
           <p className="footer-copyright">&copy; Adrien Podsiadly | 2023</p>
@@ -32,6 +36,7 @@ export default function RootLayout({
             <p>Contact</p>
           </div>
         </footer>
+        </AuthContextProvider>
       </body>
       
     </html>

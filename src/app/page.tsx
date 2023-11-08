@@ -21,8 +21,6 @@ export default function Home() {
   
 
   return (
-    <>
-      <h1 id="title_site">Pomodoro</h1>
       <div className="home-timer-container">
         <div className="home-timer-container__timer-container">
           <Timer />
@@ -33,6 +31,5 @@ export default function Home() {
         </div>
           <TasksContainer />
       </div>
-    </>
   );
 }

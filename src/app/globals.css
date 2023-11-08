@@ -19,6 +19,10 @@
     --orange-color: #FC6900;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: TimeBurner, sans-serif;
     background: url('/images/background_library.webp') no-repeat center center fixed;
@@ -85,6 +89,9 @@ body {
 
 
 footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
     color: #fff;
     padding: 0;
     margin-top: 50px;
