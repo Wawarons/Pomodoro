@@ -1,10 +1,11 @@
 .profile_container {
-    width: 25%;
+    width: 50%;
     margin: 0 auto;
     backdrop-filter: blur(50px);
     border-radius: 10px;
     text-align: center;
     color: #fff;
+    border: 2px solid #fff;
 }
 
 .profile_container-picture {
@@ -15,10 +16,11 @@
 }
 
 .profile_container-informations {
+    width: 90%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     margin: 0 auto;
     gap: 5px;
 }
@@ -36,5 +38,8 @@
 }
 
 .profile_container-informations-item h3, .profile_container-informations-item h4 {
+    max-width: 100%;
+    overflow: hidden;
     margin: 2px;
 } 
+

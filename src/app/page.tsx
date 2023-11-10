@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import GoalSession from "@/app/components/Timer/GoalSession";
 import OptionsTimer from "@/app/components/Timer/OptionsTimer";
 import ButtonsTimer from "@/app/components/Timer/ButtonsTimer";
-import { TimeContext } from "@/app/TimerContext";
+import { TimeContext } from "@/app/context/TimerContext";
 import TasksContainer from "./components/Tasks/TasksContainer";
 import MusicComponent from "./components/Music/MusicComponent";
 

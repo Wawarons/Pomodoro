@@ -2,7 +2,7 @@
 import React, {useContext} from 'react';
 import style from '../../styles/goal-session.module.css';
 import {GoGoal, GoCheckCircleFill} from 'react-icons/go';
-import {TimeContext} from "@/app/TimerContext";
+import {TimeContext} from "@/app/context/TimerContext";
 
 /*
 * Render the component for set up goal's session.

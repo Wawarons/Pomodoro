@@ -9,6 +9,7 @@ import {
   TbSquareCheckFilled,
   TbWashDry,
 } from "react-icons/tb";
+import { userAuth } from "@/app/context/Authcontext";
 
 /**
  * Container who contains all the tasks
@@ -18,31 +19,41 @@ const TasksContainer = () => {
   //Liste des tâches
   const [taskslist, setTasksList] = useState<Array<Task> | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = userAuth();
 
   useEffect(() => {
     //Récupération des anciennes tâches
-    let localStorageTasks: string | null = window.localStorage.getItem("tasks");
-    //Si anciennes tâches
-    if (localStorageTasks && !taskslist) {
-      //Parsé les anciennes tâches
-      const localStorageTasksParsed: Array<Task> =
-        JSON.parse(localStorageTasks);
-      //Si parsé ajouté à task
-      localStorageTasksParsed ? setTasksList(localStorageTasksParsed) : setTasksList([]);
-      setLoading(false);
-    } else {
-      //Update the localStorage with the new values
-      window.localStorage.setItem("tasks", JSON.stringify(taskslist));
-    }
-  }, [taskslist]);
+    const fetchData = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/tasks/${user.uid}`
+      );
+      response.json().then((data) => {
+        setTasksList(data);
+      });
+    };
+    if (user) fetchData();
+    setLoading(false);
+  }, [taskslist, user]);
 
   /**
    * useCallback function for update state of a task
    * @param targetTask @type Task
    */
   const handleChangeStateTask = useCallback(
-    (targetTask: Task) => {
-      targetTask.state = targetTask.state === 2 ? 0 : targetTask.state + 1;
+    async (targetTask: Task) => {
+      targetTask.status = targetTask.status === 2 ? 0 : targetTask.status + 1;
+      if (user) {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/update/task/${user.uid}/${targetTask.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ status: targetTask.status }),
+          }
+        );
+      }
       let newTasksList = taskslist?.filter((task) => task.id != targetTask.id);
       newTasksList ? setTasksList([...newTasksList, targetTask]) : null;
     },
@@ -54,11 +65,18 @@ const TasksContainer = () => {
    * @param targetTask @type Task
    */
   const handleDeleteTask = useCallback(
-    (targetTask: Task) => {
-      let newTasksList = taskslist?.filter((task) => task.id != targetTask.id);
-      if (newTasksList) {
-        !newTasksList.length ? window.localStorage.removeItem("tasks") : null;
-        setTasksList(newTasksList);
+    async (targetTask: Task) => {
+      if (user) {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/remove/task/${user.uid}/${targetTask.id}`,
+          { method: "PUT" }
+        );
+        let newTasksList = taskslist?.filter(
+          (task) => task.id != targetTask.id
+        );
+        if (newTasksList) {
+          setTasksList(newTasksList);
+        }
       }
     },
     [taskslist]
@@ -69,17 +87,32 @@ const TasksContainer = () => {
    * @param targetTask @type Task
    */
   const handleAddTask = useCallback(
-    (formEvent: FormEvent) => {
+    async (formEvent: FormEvent) => {
       formEvent.preventDefault();
-      let taskInput: HTMLInputElement = (formEvent.target as HTMLFormElement).task;
+      let taskInput: HTMLInputElement = (formEvent.target as HTMLFormElement)
+        .task;
       let newTask: Task = {
-        name: taskInput.value ? taskInput.value : "new Task",
-        state: 0,
+        title: taskInput.value ? taskInput.value : "new Task",
+        status: 0,
         priority: 0,
-        id: taskslist ? taskslist?.length + 1 : 0,
+        id: 0,
       };
+
+      if (user) {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/add/task/${user.uid}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newTask),
+          }
+        );
+      }
+
       if (newTask && taskslist) setTasksList([...taskslist, newTask]);
-      taskInput.value = '';
+      taskInput.value = "";
     },
     [taskslist]
   );
@@ -89,50 +122,55 @@ const TasksContainer = () => {
       <h3 className={style["tasks-container__header--title"]}>Tasks</h3>
       {taskslist?.length ? (
         taskslist
-        //Sort tasks list
+          //Sort tasks list
           .sort((taskA, taskB) => {
-            return taskA.priority < taskB.priority || taskA.state < taskB.state
+            return taskA.priority < taskB.priority ||
+              taskA.status < taskB.status
               ? -1
               : 1;
           })
           .map((task: Task, index: number) => {
             return (
-                // Task
+              // Task
               <div className={style.task} key={`task_${task.id}`}>
                 <div>
-                  <div className={style["task__delete"]} onClick={() => handleDeleteTask(task)}>
+                  <div
+                    className={style["task__delete"]}
+                    onClick={() => handleDeleteTask(task)}
+                  >
                     <TbPlaystationX />
                   </div>
                   <div onClick={() => handleChangeStateTask(task)}>
-                    {task.state === 0 ? (
+                    {task.status === 0 ? (
                       <TbWashDry />
-                    ) : task.state === 1 ? (
+                    ) : task.status === 1 ? (
                       <TbDots />
                     ) : (
                       <TbSquareCheckFilled />
                     )}
                   </div>
                 </div>
-                <TaskItem name={task.name} state={task.state} />
+                <TaskItem name={task.title} state={task.status} />
               </div>
             );
           })
       ) : (
         //If no tasks
         <div id={`${style["fox_pen"]}`}>
-          {loading ?
-          <Image src="Loader.svg" alt="loader" width={50} height={50} />:
-          <>
-          <Image
-            src="/images/fox_tomato_no_bg.webp"
-            alt="fox with pen"
-            width={150}
-            height={150}
-          />
-          <h4>Push some tasks here</h4>
-          </>
-          }
-
+          {loading ? (
+            <Image src="Loader.svg" alt="loader" width={50} height={50} />
+          ) : (
+            <>
+              <Image
+                src="/images/fox_tomato_no_bg.webp"
+                alt="fox with pen"
+                width={150}
+                height={150}
+                priority
+              />
+              <h4>Push some tasks here</h4>
+            </>
+          )}
         </div>
       )}
       {/* Form for add a new task */}

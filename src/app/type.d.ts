@@ -12,8 +12,8 @@ export type TimerOptions = {
 }
   
 export type Task = {
-    name: string;
-    state: 0 | 1 | 2 | number; //0 => to do | 1 => Pending | 2 => Done
+    title: string;
+    status: 0 | 1 | 2 | number; //0 => to do | 1 => Pending | 2 => Done
     priority: number;
-    id: number;
+    id: number
   };

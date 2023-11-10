@@ -2,32 +2,28 @@
 import React, { useState, useEffect } from "react";
 import style from "@/app/styles/navbar.module.css";
 import Link from "next/link";
-import { userAuth } from "../Authcontext";
+import { userAuth } from "../context/Authcontext";
 
 /**
  * Navbar component
  * @returns JSX Elements
  */
 function NavBar() {
-  const { user, googleSignIn, logOut } = userAuth();
+  const { user, logOut } = userAuth();
   const [loading, setLoading] = useState(true);
+    
   
-
-  const handleSignIn = async () => {
-    try {
-      await googleSignIn();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleSingOut = async () => {
-    try {
-      await logOut();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    /**
+     * Handle log out
+     */
+    const handleSingOut = async () => {
+      try {
+        await logOut();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
 
   useEffect(() => {
     const checkAuthUser = async () => {
@@ -70,10 +66,7 @@ function NavBar() {
       {loading ? null:!user ? (
         <>
           <li className={style.links__logs}>
-              Sign up
-          </li>
-          <li onClick={handleSignIn} className={style.links__logs}>
-              Sign in
+            <Link className={style.links_nav} href="/login">Sign in/Sign up</Link>
           </li>
           </>
       ) : (

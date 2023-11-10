@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import style from '../../styles/custom-sliders.module.css';
 import {PiBookOpenTextLight, PiCoffeeLight} from 'react-icons/pi';
 import {SiBuymeacoffee} from 'react-icons/si';
-import {TimeContext} from "@/app/TimerContext";
+import {TimeContext} from "@/app/context/TimerContext";
 
 /**
  * slides bar for set up options timer.

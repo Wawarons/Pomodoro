@@ -1,7 +1,7 @@
 import React, {LegacyRef, ReactNode, useCallback, useContext, useRef} from 'react';
 import style from '@/app/styles/buttonsTimer.module.css';
 import {BsFillPauseFill, BsPlayFill} from 'react-icons/bs';
-import {TimeContext} from "@/app/TimerContext";
+import {TimeContext} from "@/app/context/TimerContext";
 import {IoIosSquare} from "react-icons/io";
 
 /**

@@ -1,15 +1,15 @@
 import "./globals.css";
-import NavBar from "./components/NavBar";
+import NavBar from "@/app/components/NavBar";
 import React from "react";
 import type { Metadata } from "next";
-import { TimerProvider } from "@/app/TimerContext";
-import { AuthContextProvider } from "./Authcontext";
+import { TimerProvider } from "@/app/context/TimerContext";
+import { AuthContextProvider } from "@/app/context/Authcontext";
 
 /**
  * Metadata attributs
  */
 export const metadata: Metadata = {
-  title: "Pomodoro",
+  title: "PomoFox 🦊",
   description: "Pomodoro timer | Be more productive.",
 };
 
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body>
         <AuthContextProvider>
         <NavBar/>

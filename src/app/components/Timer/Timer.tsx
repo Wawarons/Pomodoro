@@ -3,7 +3,7 @@ import style from "@/app/styles/timer.module.css";
 import { PiBookOpenTextLight, PiCoffeeLight } from "react-icons/pi";
 import { SiBuymeacoffee } from "react-icons/si";
 import {HiOutlineInformationCircle} from 'react-icons/hi';
-import { TimeContext } from "@/app/TimerContext";
+import { TimeContext } from "@/app/context/TimerContext";
 import Informations from "./Informations";
 
 /**

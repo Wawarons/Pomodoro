@@ -1,35 +1,45 @@
 "use client";
-import React from "react";
-import { userAuth } from "../Authcontext";
+import React, { useEffect, useState } from "react";
+import { userAuth } from "../context/Authcontext";
 import Image from "next/image";
 import style from '@/app/styles/profile.module.css'
 
+type userData = {
+  email: string,
+  username: string,
+  createdAt: Date
+}
 
 const Profile = () => {
   const { user } = userAuth();
-
-  console.log(user);
+  const [userData, setUserData] = useState<userData | null>(null);
+  useEffect( () => {
+    const fetchData = async () => {
+      if(user){
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${user.uid}`);
+        response.json().then((data) => {
+          setUserData(data[0]);
+        });
+      }
+    }
+    
+    fetchData();
+      
+  }, [user, userData]);
 
   return (
     <div className={style.profile_container}>
-      {user ? (
+      {userData ? (
         <>
           <h1>Profile</h1>
-          <Image
-            src={user.photoURL}
-            alt="profile picture"
-            width={50}
-            height={50}
-            className={style['profile_container-picture']}
-          />
           <div className={style['profile_container-informations']}>
             <div className={style['profile_container-informations-item']}>
               <h3>Pseudo</h3>
-              <h4>{user.displayName}</h4>
+              <h4>{userData.username}</h4>
             </div>
             <div className={style['profile_container-informations-item']}>
               <h3>Email</h3>
-              <h4>{user.email}</h4>
+              <h4>{user?.email}</h4>
             </div>
           </div>
           
