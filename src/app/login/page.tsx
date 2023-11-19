@@ -9,10 +9,6 @@ const Login = () => {
   const {user} = userAuth();
   const [newUser, setNewUser] = useState<boolean>(false);
 
-  useEffect(() => {
-
-  }, [newUser]);
-
   return (
     <div className={style.login_container}>
       {

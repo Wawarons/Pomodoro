@@ -12,7 +12,9 @@ export const TimeContext = createContext<{timer: TimerOptions, updateTimer: (new
  */
 export const TimerProvider = ({children}: {children: ReactNode}) => {
     const [timer, setTimer] = useState<TimerOptions>({
-        title: 'Title',
+        title_category: 'Work',
+        category_id: 1,
+        actualTime: 25,
         workTime: 25,
         shortBreakTime: 5,
         longBreakTime: 15,

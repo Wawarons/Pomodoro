@@ -25,27 +25,42 @@ html, body {
 
 body {
     font-family: TimeBurner, sans-serif;
-    background: url('/images/background_library.webp') no-repeat center center fixed;
+    background: url('/images/background_room.webp') no-repeat center center fixed;
     background-size: cover;
 
 }
 
-#title_site {
-    position: relative;
-    top: 0;
-    left: 0;
-    color: #fff;
-    font-size: 1.85em;
-    margin: 0 0 25px 0;
-    width: fit-content;
+h1 {
+    font-size: 2.3em;
 }
 
-.home-timer-container {
+.back_to_home {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 2em;
+}
+
+.back_to_home a {
+    color: var(--orange-color);
+}
+
+.bg-blur {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+} 
+
+.home-timer-container {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
-    margin: 0 auto;
+    padding: 10px;
 }
 
 .hidden {
@@ -60,29 +75,24 @@ body {
     backdrop-filter: blur(10px) brightness(70%);
 }
 
-@media (max-width: 1150px) {
-    .home-timer-container {
-        margin: 0 auto;
-        position: unset;
-        transform: translateX(0);
-    }
-}
-
-@media (max-width: 750px) {
+@media (max-width: 880px) {
 
     .home-timer-container {
         align-items: center;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 
     .home-timer-container__timer-container {
         width: 90%;
         max-width: 450px;
+        margin: 0 auto;
     }
 }
+
 @media (min-width: 750px) {
     .home-timer-container__timer-container {
-        width: 25%;
         min-width: 450px;
     }
 }
@@ -94,7 +104,7 @@ footer {
     left: 0;
     color: #fff;
     padding: 0;
-    margin-top: 50px;
+    margin-top: 120px;
     display: flex;
     justify-content: space-between;
     width: 100%;

@@ -3,6 +3,7 @@ import React, {useContext} from 'react';
 import style from '../../styles/goal-session.module.css';
 import {GoGoal, GoCheckCircleFill} from 'react-icons/go';
 import {TimeContext} from "@/app/context/TimerContext";
+import SelectCategorySession from '../SelectCategorySession';
 
 /*
 * Render the component for set up goal's session.
@@ -19,7 +20,7 @@ const GoalSession = () => {
 
     return (
         <div className={style['goal-session-container']}>
-            <input type="text" defaultValue="Title" name="title-session" id={style['title-session']} maxLength={20} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateTimer({title: e.target.value})} disabled={timer.sessionStart}/>
+            <SelectCategorySession />
             <div className={style['goal-session-container__setup-container']}>
                 <div className={style['container-options']}>
                     <GoCheckCircleFill className={style.icons}/>

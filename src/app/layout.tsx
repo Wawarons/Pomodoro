@@ -4,6 +4,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { TimerProvider } from "@/app/context/TimerContext";
 import { AuthContextProvider } from "@/app/context/Authcontext";
+import Head from "next/head";
 
 /**
  * Metadata attributs
@@ -24,18 +25,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
+      <Head>
+        <link rel="icon" href="/icon.ico" />
+      </Head>
       <body>
         <AuthContextProvider>
-        <NavBar/>
+          <div className="bg-blur"></div>
         <TimerProvider>{children}</TimerProvider>
-        <footer>
+        {/* <footer>
           <p className="footer-copyright">&copy; Adrien Podsiadly | 2023</p>
           <div className="footer-documents">
             <p>Mentions Légales</p>
             <p>Plan du site</p>
-            <p>Contact</p>
           </div>
-        </footer>
+        </footer> */}
         </AuthContextProvider>
       </body>
       

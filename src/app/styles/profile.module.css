@@ -1,22 +1,20 @@
+.profile__title {
+    color: #fff;
+    margin: 25px auto;
+    width: fit-content;
+}
+
 .profile_container {
-    width: 50%;
+    width: fit-content;
     margin: 0 auto;
-    backdrop-filter: blur(50px);
     border-radius: 10px;
     text-align: center;
     color: #fff;
-    border: 2px solid #fff;
-}
-
-.profile_container-picture {
-    border-radius: 50%;
-    border: solid 2px #fff;
-    width: 15%;
-    height: auto;
+    padding: 15px;
 }
 
 .profile_container-informations {
-    width: 90%;
+    width: fit-content;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -30,7 +28,6 @@
     padding: 5px;
     width: 200px;
     border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.25) 0 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0 0 0 1px inset;
 }
 
 .profile_container-informations-item h3 {
@@ -41,5 +38,37 @@
     max-width: 100%;
     overflow: hidden;
     margin: 2px;
-} 
+}
 
+.profile_container-report-circle {
+    margin: 0 auto;
+}
+
+.profile_container-report-circle canvas {
+    margin: 0 auto;
+    padding: 5px;
+    border-radius: 10px;
+    color: #fff;
+}
+
+.logout {
+    color: var(--orange-color);
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.profile_container-report-circle canvas, .profile_container-informations-item, .logout {
+    box-shadow: rgba(0, 0, 0, 0.25) 0 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0 0 0 1px inset;
+    backdrop-filter: blur(15px);
+}
+
+@media (min-width: 750px) {
+    .profile_container-report-circle {
+        width: 100%;
+    }
+}

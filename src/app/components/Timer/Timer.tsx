@@ -2,12 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import style from "@/app/styles/timer.module.css";
 import { PiBookOpenTextLight, PiCoffeeLight } from "react-icons/pi";
 import { SiBuymeacoffee } from "react-icons/si";
-import {HiOutlineInformationCircle} from 'react-icons/hi';
+import { HiOutlineInformationCircle } from "react-icons/hi";
 import { TimeContext } from "@/app/context/TimerContext";
 import Informations from "./Informations";
+import { TbCircleLetterX } from "react-icons/tb";
 
 /**
- * Timer component 
+ * Timer component
  * @returns JSX Element
  */
 const Timer = () => {
@@ -18,11 +19,11 @@ const Timer = () => {
     throw new Error("ShowTimeComponent must be used within Provider");
 
   const { timer, updateTimer } = context;
-  const [timeLeft, setTimeLeft] = useState<number>(timer.workTime * 60);
+  const [timeLeft, setTimeLeft] = useState<number>(timer.actualTime * 60);
   const stepSession = timer.stepSession;
 
   /**
-   * Update the step value 
+   * Update the step value
    * @param step new step value
    */
   const updateDisplayTime = (step: "work" | "short break" | "long break") => {
@@ -43,9 +44,15 @@ const Timer = () => {
       if (timeLeft && !timer.isBreak) {
         const interval = setInterval(() => {
           setTimeLeft(timeLeft - 1);
+          updateTimer({actualTime: (timeLeft-1)/60});
         }, 1000);
 
-        return () => clearInterval(interval);
+        return () => {
+          clearInterval(interval);
+        }
+
+
+
       } else if (timeLeft === 0) {
         //Else if step of the session is work we add 1 to sessionDo
         if (timer.stepSession === "work") {
@@ -76,9 +83,9 @@ const Timer = () => {
 
   /**
    * Convert milliseconds to mm:ss (m: minutes, s:seconds)
-   * @param secondsLeft number Time left in milliseconds 
+   * @param secondsLeft number Time left in milliseconds
    * @type number
-   * @returns 
+   * @returns
    */
   function millisToMinutesAndSeconds(secondsLeft: number): {
     minutes: number | string;
@@ -101,11 +108,21 @@ const Timer = () => {
 
   return (
     <>
-      {showInformations ? <Informations />:null}
+      {showInformations ? <Informations /> : null}
       <div className={style["time-container"]}>
-        <HiOutlineInformationCircle className={style.informations} title="informations" onClick={()=>setShowInformations(!showInformations)}/>
+        <div
+          className={style.informations}
+          title="informations"
+          onClick={() => setShowInformations(!showInformations)}
+        >
+          {!showInformations ? (
+            <HiOutlineInformationCircle />
+          ) : (
+            <TbCircleLetterX />
+          )}
+        </div>
         <div className={style["time-container__title--session"]}>
-        <h2>{timer.stepSession}</h2>
+          <h2>{timer.stepSession}</h2>
           {timer.stepSession === "work" ? (
             <PiBookOpenTextLight />
           ) : timer.stepSession === "short break" ? (
@@ -114,8 +131,8 @@ const Timer = () => {
             <SiBuymeacoffee />
           )}
         </div>
-        <div className={style["timer"]}>
-          <div>
+        <div className={style.timer}>
+          <div className={style['timer-content']}>
             <h2 className={style["time-value"]}>
               {millisToMinutesAndSeconds(timeLeft).minutes}
             </h2>

@@ -1,6 +1,7 @@
 .login_container {
   color: var(--orange-color);
   width: 400px;
+  max-width: 90%;
   margin: auto;
   padding: 5px;
   border-radius: 10px;

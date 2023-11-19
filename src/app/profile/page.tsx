@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { userAuth } from "../context/Authcontext";
-import Image from "next/image";
 import style from '@/app/styles/profile.module.css'
+import HomeButton from "../components/HomeButton";
+import ReportCircle from "../components/ReportCircle";
 
 type userData = {
   email: string,
@@ -22,16 +23,18 @@ const Profile = () => {
         });
       }
     }
-    
     fetchData();
-      
   }, [user, userData]);
 
+
   return (
+    <>
+    <HomeButton />
+    <div className={style.logout}>Log out</div>
+    <h1 className={style.profile__title}>Profile</h1>
     <div className={style.profile_container}>
       {userData ? (
         <>
-          <h1>Profile</h1>
           <div className={style['profile_container-informations']}>
             <div className={style['profile_container-informations-item']}>
               <h3>Pseudo</h3>
@@ -41,12 +44,22 @@ const Profile = () => {
               <h3>Email</h3>
               <h4>{user?.email}</h4>
             </div>
+            <div className={style['profile_container-informations-item']}>
+              <h3>Temps de travail</h3>
+              <h4>15h34min</h4>
+            </div>
+            <div className={style['profile_container-informations-item']}>
+              <h3>Pomodoro Effectué</h3>
+              <h4>5</h4>
+            </div>
+            <div className={style['profile_container-report-circle']}>
+              <ReportCircle />
+            </div>
           </div>
-          
-          
         </>
       ) : null}
     </div>
+    </>
   );
 };
 

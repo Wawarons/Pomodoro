@@ -6,7 +6,7 @@ import OptionsTimer from "@/app/components/Timer/OptionsTimer";
 import ButtonsTimer from "@/app/components/Timer/ButtonsTimer";
 import { TimeContext } from "@/app/context/TimerContext";
 import TasksContainer from "./components/Tasks/TasksContainer";
-import MusicComponent from "./components/Music/MusicComponent";
+import NavBar from "./components/NavBar";
 
 /**
  * Home page 
@@ -21,15 +21,17 @@ export default function Home() {
   
 
   return (
+    <>
+    <NavBar/>
       <div className="home-timer-container">
         <div className="home-timer-container__timer-container">
           <Timer />
-          <MusicComponent />
           <GoalSession />
           {!timer.sessionStart ? <OptionsTimer /> : null}
           <ButtonsTimer />
         </div>
           <TasksContainer />
       </div>
+      </>
   );
 }

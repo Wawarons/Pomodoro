@@ -1,0 +1,12 @@
+.not_found-container {
+    width: 75%;
+    margin: auto;
+    text-align: center;
+    color: var(--orange-color);
+}
+
+.not_found-container img {
+    width: 25%;
+    height: auto;
+    border-radius: 5px;
+}
