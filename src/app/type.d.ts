@@ -14,6 +14,14 @@ export type TimerOptions = {
   stepSession: "work" | "short break" | "long break";
 };
 
+
+
+export type FetchOptions = {
+  method?: string;
+  headers?: { [key: string]: string };
+  body?: BodyInit; 
+};
+
 export type Task = {
   title: string;
   status?: 0 | 1 | 2 | number; //0 => to do | 1 => Pending | 2 => Done
@@ -22,8 +30,8 @@ export type Task = {
 };
 
 export type Category = {
-  id: number, 
   title: string,
+  id: number
 }
 
 

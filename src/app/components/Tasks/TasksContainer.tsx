@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useCallback, FormEvent } from "react";
-import style from "@/app/styles/tasks.module.css";
-import { Task } from "@/app/type";
-import TaskItem from "./TaskItem";
 import Image from "next/image";
+import TaskItem from "./TaskItem";
+import { fetchData } from "../utilities/FetchData";
+import { userAuth } from "@/app/context/Authcontext";
+import { FetchOptions, Task } from "@/app/type";
 import {
   TbDots,
   TbPlaystationX,
   TbSquareCheckFilled,
   TbWashDry,
 } from "react-icons/tb";
-import { userAuth } from "@/app/context/Authcontext";
+import style from "./tasks.module.css";
+import { optionsFetch } from "../utilities/OptionsFetch";
 
 /**
  * Container who contains all the tasks
@@ -19,13 +21,13 @@ const TasksContainer = () => {
   //Liste des tâches
   const [taskslist, setTasksList] = useState<Array<Task> | null>(null);
   const [loading, setLoading] = useState(true);
-  const user = userAuth()?.user;
+  const { user } = userAuth();
 
   const compareTasks = (taskA: Task, taskB: Task) => {
-    if(taskA.status !== undefined && taskB.status !== undefined) {
-      if(taskA.status > taskB.status) {
+    if (taskA.status !== undefined && taskB.status !== undefined) {
+      if (taskA.status > taskB.status) {
         return 1;
-      }else if(taskA.status < taskB.status){
+      } else if (taskA.status < taskB.status) {
         return -1;
       }
     }
@@ -33,18 +35,14 @@ const TasksContainer = () => {
   }
 
   useEffect(() => {
-    //Récupération des anciennes tâches
-    const fetchData = async () => {
-      if (user) {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/tasks/${user.uid}`
-        );
-        response.json().then((data) => {
-          setTasksList(data.sort(compareTasks));
-        });
-      }
+    if (user && !taskslist) {
+      fetchData(`/tasks/${user.uid}`, { method: 'GET' }).then((response) => {
+        if (response) {
+          setTasksList(response);
+        }
+      })
+
     };
-    if (user && !taskslist?.length) fetchData();
     setLoading(false);
   }, [taskslist, user]);
 
@@ -59,16 +57,7 @@ const TasksContainer = () => {
         targetTask.status = targetTask.status === 2 ? 0 : targetTask.status + 1;
 
         if (user) {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/update/task/${user.uid}/${targetTask.id}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ status: targetTask.status }),
-            }
-          );
+          await fetchData(`/update/task/${user.uid}/${targetTask.id}`, optionsFetch('PUT', {t_status: targetTask.status}));
         }
       }
 
@@ -76,7 +65,7 @@ const TasksContainer = () => {
         return task.id !== targetTask.id
       });
 
-      if(newTasksList)
+      if (newTasksList)
         setTasksList([...newTasksList, targetTask].sort(compareTasks));
     },
     [taskslist]
@@ -89,10 +78,7 @@ const TasksContainer = () => {
   const handleDeleteTask = useCallback(
     async (targetTask: Task) => {
       if (user) {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/delete/task/${user.uid}/${targetTask.id}`,
-          { method: "DELETE" }
-        );
+        await fetchData(`/delete/task/${user.uid}/${targetTask.id}`, { method: 'DELETE' });
         let newTasksList = taskslist?.filter(
           (task) => task.id !== targetTask.id
         );
@@ -113,6 +99,7 @@ const TasksContainer = () => {
       formEvent.preventDefault();
       let taskInput: HTMLInputElement = (formEvent.target as HTMLFormElement)
         .task;
+
       let newTask: Task = {
         title: taskInput.value ? taskInput.value : "new Task",
         status: 0,
@@ -120,16 +107,7 @@ const TasksContainer = () => {
       };
 
       if (user) {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/add/task/${user.uid}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newTask),
-          }
-        );
+        await fetchData(`/add/task/${user.uid}`, optionsFetch('POST', newTask));
       }
 
       if (newTask && taskslist) setTasksList([newTask, ...taskslist]);
@@ -139,37 +117,37 @@ const TasksContainer = () => {
   );
 
   const iterateTaskList = useCallback((taskslist: Array<Task>) => {
-      //Sort tasks list
-      return taskslist.map((task: Task, index: number) => {
-        return (
-          // Task
-          <div className={style.task} key={`task_${index}`}>
-            <div>
-              <div
-                className={style["task__delete"]}
-                onClick={() => handleDeleteTask(task)}
-              >
-                <TbPlaystationX />
-              </div>
-              <div onClick={() => handleChangeStateTask(task)}>
-                {task.status === 0 ? (
-                  <TbWashDry />
-                ) : task.status === 1 ? (
-                  <TbDots />
-                ) : (
-                  <TbSquareCheckFilled />
-                )}
-              </div>
+    //Sort tasks list
+    return taskslist.map((task: Task, index: number) => {
+      return (
+        // Task
+        <div className={style.task} key={`task_${index}`}>
+          <div>
+            <div
+              className={style["task__delete"]}
+              onClick={() => handleDeleteTask(task)}
+            >
+              <TbPlaystationX />
             </div>
-            <div>
-
-              <TaskItem name={task.title} state={task.status ? task.status : 0} id={task.id ? task.id : null} />
-
+            <div onClick={() => handleChangeStateTask(task)}>
+              {task.status === 0 ? (
+                <TbWashDry />
+              ) : task.status === 1 ? (
+                <TbDots />
+              ) : (
+                <TbSquareCheckFilled />
+              )}
             </div>
           </div>
-        );
-      });
-    }, [taskslist]);
+          <div>
+
+            <TaskItem name={task.title} state={task.status ? task.status : 0} id={task.id ? task.id : null} />
+
+          </div>
+        </div>
+      );
+    });
+  }, [taskslist]);
 
   return (
     <div className={style["tasks-container"]}>
@@ -195,6 +173,7 @@ const TasksContainer = () => {
           )}
         </div>
       )}
+      
       {/* Form for add a new task */}
       <form onSubmit={handleAddTask} className={style['tasks-container__form']}>
         <input

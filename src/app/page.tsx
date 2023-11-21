@@ -1,12 +1,12 @@
 "use client";
 import Timer from "@/app/components/Timer/Timer";
 import React, { useContext } from "react";
-import GoalSession from "@/app/components/Timer/GoalSession";
-import OptionsTimer from "@/app/components/Timer/OptionsTimer";
-import ButtonsTimer from "@/app/components/Timer/ButtonsTimer";
+import GoalSession from "@/app/components/Timer/goal_session/GoalSession";
+import OptionsTimer from "@/app/components/Timer/sliders/OptionsTimer";
+import ButtonsTimer from "@/app/components/Timer/buttons/ButtonsTimer";
+import TasksContainer from "@/app/components/Tasks/TasksContainer";
 import { TimeContext } from "@/app/context/TimerContext";
-import TasksContainer from "./components/Tasks/TasksContainer";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/navbar/NavBar";
 
 /**
  * Home page 

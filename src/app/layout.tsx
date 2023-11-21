@@ -1,10 +1,9 @@
-import "./globals.css";
-import NavBar from "@/app/components/NavBar";
 import React from "react";
+import Head from "next/head";
 import type { Metadata } from "next";
 import { TimerProvider } from "@/app/context/TimerContext";
 import { AuthContextProvider } from "@/app/context/Authcontext";
-import Head from "next/head";
+import "./globals.css";
 
 /**
  * Metadata attributs

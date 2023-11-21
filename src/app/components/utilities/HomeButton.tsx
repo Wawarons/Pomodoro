@@ -1,6 +1,6 @@
-import React from 'react'
-import { BiLeftArrowAlt } from "react-icons/bi";
+import React from 'react';
 import Link from 'next/link';
+import { BiLeftArrowAlt } from "react-icons/bi";
 
 
 const HomeButton = () => {

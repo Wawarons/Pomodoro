@@ -1,8 +1,6 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
-import style from '@/app/styles/tasks.module.css'
-import { userAuth } from '@/app/context/Authcontext'
-import ClickOutside from '../utilities/ClickOutside'
+import React, { useRef } from 'react'
+import style from './tasks.module.css'
 
 interface TaskProps {
   state: number,

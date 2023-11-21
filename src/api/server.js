@@ -3,62 +3,140 @@ const express = require("express");
 const cors = require('cors');
 const app = express();
 const db = require("./db");
-const port = process.env.PORT || 3000; // Port number (default: 3000)
+const update = require("./utilities/update");
+const select = require("./utilities/select");
+const remove = require("./utilities/remove");
+const insert = require("./utilities/insert");
+const port = process.env.PORT || 3000;
 
 app.use(cors());
-// Middleware to parse JSON data in requests
 app.use(express.json());
+
+//Get
+app.get("/api/user/:userid", (req, res) => {
+    const { userid } = req.params
+    const elements = {
+        u_email: 'email',
+        u_username: 'username',
+        u_created_at: 'createdAt'
+    }
+
+    select('pm_user', elements, { u_user_id: userid });
+});
+
 
 app.get("/api/tasks/:userid", (req, res) => {
     const { userid } = req.params;
-    db.query(
-        `SELECT t_id AS id, t_title AS title, t_note AS note, t_priority AS priority, t_status AS status FROM pm_task WHERE t_fk_user_id = $1`,
-        [userid],
-        (error, result) => {
-            if (error) {
-                console.error('Error executing query:', error);
-                res.status(500).send('Error occurred while querying the database');
-            } else {
-                res.send(result.rows);
-            }
-        }
-    )
+    const elements = {
+        t_id: 'id',
+        t_title: 'title',
+        t_note: 'note',
+        t_priority: 'priority',
+        t_status: 'status'
+    }
+
+    select('pm_task', elements, { t_fk_user_id: userid }, db, res);
 })
 
 app.get("/api/category/:userid", (req, res) => {
     const { userid } = req.params;
-    db.query(
-        `SELECT c_id AS id, c_title AS title, c_color AS color FROM pm_category WHERE c_fk_user_id = $1`,
-        [userid],
-        (error, result) => {
-            if (error) {
-                console.error('Error executing query:', error);
-                res.status(500).send('Error occurred while querying the database');
-            } else {
-                res.send(result.rows);
-            }
-        }
-    )
+    const elements = {
+        c_id: 'id',
+        c_title: 'title',
+        c_color: 'color'
+    }
+
+    select('pm_category', elements, { c_fk_user_id: userid }, db, res);
 })
 
+app.get("/api/pomodoro/:userid/:categoryid", (req, res) => {
+    const { userid, categoryid } = req.params;
+    const elements = {
+        p_id: 'id',
+        p_work_time: 'work_time',
+        p_short_break_time: 'short_break_time',
+        p_long_break_time: 'long_break_time',
+        p_session_goal: 'session_goal'
+    }
+
+    const conditions = {
+        p_fk_user_id: userid,
+        p_fk_category_id: categoryid
+    }
+
+    select('pm_pomodoro', elements, conditions, db, res);
+})
+
+//Updates
+app.put("/api/update/task/:userid/:taskid", (req, res) => {
+    const { userid, taskid } = req.params;
+    const conditions = {
+        t_fk_user_id: userid,
+        t_id: taskid
+    }
+
+    update('pm_task', req.body, conditions, db, res);
+
+});
+
+app.put("/api/update/pomodoro/:userid/:categoryid", (req, res) => {
+    const { userid, categoryid } = req.params;
+
+    const conditions = {
+        'p_fk_category_id': categoryid,
+        'p_fk_user_id': userid
+    }
+
+    update('pm_pomodoro', req.body, conditions, db, res)
+});
+
+
+
+//Delete
+app.delete("/api/delete/task/:userid/:taskid", (req, res) => {
+    const { userid, taskid } = req.params;
+    const conditions = {
+        t_fk_user_id: userid,
+        t_id: taskid
+    }
+
+    remove('pm_task', conditions, db, res);
+
+});
+
+app.delete("/api/delete/category/:userid/:categoryid", (req, res) => {
+    const { userid, categoryid } = req.params;
+    const conditions = {
+        c_fk_user_id: userid,
+        c_id: categoryid
+    }
+
+    remove('pm_category', conditions, db, res);
+});
+
+
+//Insert
 app.post("/api/add/category/:userid", (req, res) => {
     const { userid } = req.params;
     const { title_category } = req.body;
-
-    if(title_category !== null && title_category.length > 0){
-        db.query(
-            `INSERT INTO pm_category (c_title, c_fk_user_id) VALUES ($1, $2)`,
-            [title_category, userid],
-            (error, result) => {
-                if (error) {
-                    console.error('Error executing query:', error);
-                    res.status(500).send('Error occurred while querying the database');
-                } else {
-                    res.send(result.rows);
-                }
-            }
-        )
+    const elements = {
+        c_title: title_category,
+        c_fk_user_id: userid
     }
+
+    if (title_category !== null)
+        insert('pm_category', elements, db, res, { c_id: 'id' });
+})
+
+app.post("/api/add/pomodoro/:userid", (req, res) => {
+    const { userid } = req.params;
+    const { category_id } = req.body;
+    const elements = {
+        p_fk_category_id: category_id,
+        p_fk_user_id: userid
+    }
+
+    insert('pm_pomodoro', elements, db, res);
 })
 
 
@@ -66,151 +144,33 @@ app.post("/api/add/category/:userid", (req, res) => {
 app.post("/api/add/task/:userid", (req, res) => {
     const { userid } = req.params;
     const { title } = req.body;
-
-    db.query(`INSERT INTO pm_task (t_title, t_fk_user_id) VALUES ($1, $2)`, [title, userid], (error, result) => {
-        if (error) {
-            console.error('Error executing query:', error);
-            res.status(500).send('Error occurred while querying the database');
-        } else {
-            res.status(200).send('Task added');
-        }
-    });
-
-});
-
-app.delete("/api/delete/task/:userid/:taskid", (req, res) => {
-    const { userid, taskid } = req.params;
-
-    db.query(`DELETE FROM pm_task WHERE t_fk_user_id = $1 AND t_id = $2`, [userid, taskid], (error, result) => {
-        if (error) {
-            console.error('Error executing query:', error);
-            res.status(500).send('Error occurred while querying the database');
-        } else {
-            res.status(200).send('Task deleted');
-        }
-    });
-
-});
-
-app.delete("/api/delete/category/:userid/:categoryid", (req, res) => {
-    const { userid, categoryid } = req.params;
-
-    db.query(`DELETE FROM pm_category WHERE c_fk_user_id = $1 AND c_id = $2`, [userid, categoryid], (error, result) => {
-        if (error) {
-            console.error('Error executing query:', error);
-            res.status(500).send('Error occurred while querying the database');
-        } else {
-            res.status(200).send('Task deleted');
-        }
-    });
-
-});
-
-app.put("/api/update/task/:userid/:taskid", (req, res) => {
-    const { userid, taskid } = req.params;
-    let newValues = [];
-    let updateAttributes = '';
-
-    for (const [key, value] of Object.entries(req.body)) {
-        updateAttributes += ` "t_${key}" = $${newValues.length + 1}, `;
-        newValues.push(value);
+    const elements = {
+        t_title: title,
+        t_fk_user_id: userid
     }
 
-    updateAttributes = updateAttributes.slice(0, -2);
-
-    const query = `UPDATE pm_task SET ${updateAttributes} WHERE t_fk_user_id = $2 AND t_id = $3;`
-
-    db.query(query, [...newValues, userid, taskid], (error, result) => {
-        if (error) {
-            console.error('Error executing query:', error);
-            res.status(500).send('Error occurred while querying the database');
-        } else {
-            res.status(200).send('Task update');
-        }
-    });
-
-});
-
-//Penser à la catégorie id en clé étrangère
-app.post("/api/update/pomodoro_done/:userid/:category_id", (req, res) => {
-    const { userid, category_id } = req.params;
-    const { work_time, sessions_done } = req.body;
-    let newValues = [];
-
-    //Check if already exist
-    db.query(`SELECT pd_title_category from pm_pomodoro_done WHERE pd_fk_category_id = $1 AND pd_fk_user_id = $2`, [category_id, userid], (err, result) => {
-
-        //If exist
-        if (result.rows.length > 0) {
-            for (const [key, value] of Object.entries(req.body)) {
-                updateAttributes += ` "pd_${key}" = $${newValues.length + 1}, `;
-                newValues.push(value);
-            }
-
-
-            //Update
-            const query = `UPDATE pm_pomodoro_done SET ${updateAttributes.slice(0, -2)} WHERE pd_fk_user_id = $2 AND pd_title_category = $3;`
-        } else {
-
-            for (const [key, value] of Object.entries(req.body)) {
-                updateAttributes += `$${newValues.length + 1}, `;
-                newValues.push(value);
-            }
-
-
-            // Add new item
-            const query = `INSERT INTO pm_pomodoro_done (pd_title_category, pd_work_time, pd_session_done) VALUES ${updateAttributes.slice(0, -2)} WHERE pd_fk_user_id = $2 AND pd_fk_category_id = $3;`
-        }
-
-        db.query(query, [...newValues, userid, title_category], (error, result) => {
-            if (error) {
-                console.error('Error executing query:', error);
-                res.status(500).send('Error occurred while querying the database');
-            } else {
-                res.status(200).send('Time add');
-            }
-        });
-    });
-
-});
-
-
-
-
-// Get user informations
-app.get("/api/user/:userid", (req, res) => {
-    const { userid } = req.params
-    if (userid) {
-        db.query('SELECT u_email AS email, u_username AS username, u_created_at AS createdAt FROM pm_user WHERE u_user_id = $1', [userid], (error, result) => {
-            if (error) {
-                console.error('Error executing query:', error);
-                res.status(500).send('Error occurred while querying the database');
-            } else {
-                res.send(result.rows);
-            }
-        });
-    }
-
+    insert('pm_task', elements, db, res);
 });
 
 //Add new user 
 app.post("/api/add/user", (req, res) => {
-    console.log(req.body);
     const { username, email, user_id } = req.body;
+
     if (username && email && user_id) {
-        db.query('INSERT INTO pm_user (u_user_id, u_email,u_username,u_created_at) VALUES ($1, $2, $3, NOW())', [user_id, email, username], (error) => {
-            if (error) {
-                console.error('Error executing query:', error);
-                res.status(500).send('Error occurred while querying the database');
-            } else {
-                res.status(200).send('User add');
-            }
-        });
+        const elements = {
+            u_user_id: user_id,
+            u_email: email,
+            u_username: username,
+            u_created_at: NOW()
+        };
+
+        insert('pm_user', elements, db, res);
     }
 })
-// Start the server
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
+
 });
 
 module.exports = app;

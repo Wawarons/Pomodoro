@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import style from "@/app/styles/navbar.module.css";
 import Link from "next/link";
-import { userAuth } from "../context/Authcontext";
-import { VscAccount, VscSettingsGear } from "react-icons/vsc";
+import { userAuth } from "@/app/context/Authcontext";
+import { VscAccount } from "react-icons/vsc";
+import style from "./navbar.module.css";
 
 /**
  * Navbar component
@@ -36,13 +36,8 @@ function NavBar() {
               <Link className={style.links_nav} href="/">
                 Home
               </Link>
-            {user ? (
-                  <Link className={style.links_nav} href="/Reports">
-                    Report
-                  </Link>
-            ) : null}
               <Link className={style.links_nav} href="/about">
-                About
+                Flashcards
               </Link>
           </div>
         </div>

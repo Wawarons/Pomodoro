@@ -12,8 +12,7 @@
     width: 200px;
     height: 10px;
     border-radius: 5px;
-    background: var(--light-grey-color);
-    box-shadow: 0px 2px 2px 1px rgba(236, 86, 5, 0.36);
+    background: var(--pink-color);
 }
 
 .custom-slider::-webkit-slider-thumb {
@@ -22,7 +21,8 @@
     width: 20px;
     border-radius: 50%;
     background: #fff;
-    border: 2px solid var(--orange-color);
+    /* border: 2px solid var(--orange-color); */
+    box-shadow: 0px 10px 20px -5px rgba(0,0,0,0.3);
     cursor: ew-resize;
     transition: background .3s ease-in-out;
 }

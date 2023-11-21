@@ -1,8 +1,8 @@
-import React, {LegacyRef, ReactNode, useCallback, useContext, useRef} from 'react';
-import style from '@/app/styles/buttonsTimer.module.css';
-import {BsFillPauseFill, BsPlayFill} from 'react-icons/bs';
+import React, {useCallback, useContext, useRef} from 'react';
 import {TimeContext} from "@/app/context/TimerContext";
 import {IoIosSquare} from "react-icons/io";
+import {BsFillPauseFill, BsPlayFill} from 'react-icons/bs';
+import style from './buttonsTimer.module.css';
 
 /**
  * Buttons for the timers Start/Stop/Reset 
@@ -18,11 +18,15 @@ const ButtonsTimer = () => {
     //Reset the timer 
     const handleClick = useCallback((reset: boolean) => {
         if (reset) {
-            updateTimer({stepSession: 'work', sessionStart: false, isBreak: true, sessionDo: 0});
+            updateTimer({
+                stepSession: 'work',
+                sessionStart: false,
+                isBreak: true,
+                sessionDo: 0
+            });
         }
         confirmDiv.current?.classList.add('hidden');
     }, []);
-
 
     return (
         <div className={style.buttons}>

@@ -13,23 +13,45 @@ import {
 
 import { auth } from "@/firebase.config";
 import { useRouter } from "next/navigation";
+import { fetchData } from "../components/utilities/FetchData";
+import { optionsFetch } from "../components/utilities/OptionsFetch";
 
 interface AuthContextType {
   user: User | null;
-  googleSignIn: ()=>void;
-  googleSignUp: ()=>void;
-  EmailPasswordSignUp: (email: string, password: string, username: string)=> void;
-  EmailPasswordSignIn:(email: string, password: string) => void;
-  logOut:()=>void;
-
 }
 
- /**
-   * Email password sign up method
-   * @param email @type string
-   * @param password  @type string
-   */
- const EmailPasswordSignUp = (
+
+const setUpNewUSer = async (userID: string) => {
+
+  await fetchData(`/add/category/${userID}`, optionsFetch('POST', { title_category: 'Work' })).then(async (response) => {
+    if (response && response[0]) {
+      await fetchData(`/add/pomodoro/${userID}`, optionsFetch('POST', { category_id: response[0].id }));
+    }
+  });
+}
+
+export const fetchDataWithCredentials = async (
+  user: User,
+  username: string
+) => {
+  try {
+    console.log(user);
+    if (user && user.email && user.uid)
+      fetchData('/add/user', optionsFetch('POST', { username: username, email: user.email, user_id: user.uid }))
+        .then(() => {
+          if (user.uid)
+            setUpNewUSer(user?.uid);
+        }).catch((error) => {
+          console.error("Failed to fetch data:", error);
+        });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+
+
+export const EmailPasswordSignUp = (
   email: string,
   password: string,
   username: string
@@ -37,7 +59,8 @@ interface AuthContextType {
   createUserWithEmailAndPassword(auth, email, password)
     .then(async (userCredential: UserCredential) => {
       try {
-        await fetchDataWithCredentials(userCredential, username);
+        if (userCredential.user && username)
+          await fetchDataWithCredentials(userCredential.user, username);
       } catch (error) {
         throw error;
       }
@@ -47,42 +70,9 @@ interface AuthContextType {
     });
 };
 
-const fetchDataWithCredentials = async (
-  userCredential: UserCredential,
-  username: string
-) => {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/add/user`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          email: userCredential.user.email,
-          user_id: userCredential.user.uid,
-        }),
-      }
-    );
 
-    if (response.ok) {
-      const data = await response.json();
-    } else {
-      console.error("Failed to fetch data:", response.statusText);
-    }
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-};
 
-/**
- * Email password sign in method
- * @param email @type string
- * @param password  @type string
- */
-const EmailPasswordSignIn = async (email: string, password: string) => {
+export const EmailPasswordSignIn = async (email: string, password: string) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
@@ -90,27 +80,23 @@ const EmailPasswordSignIn = async (email: string, password: string) => {
   }
 };
 
-/**
- * Google sign in
- */
-const googleSignIn = () => {
+
+
+export const googleSignIn = () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(auth, provider);
 };
 
-/**
- * Google sign up
- */
-const googleSignUp = async () => {
+
+
+
+export const googleSignUp = async () => {
   const provider = new GoogleAuthProvider();
   signInWithPopup(auth, provider)
     .then(async (userCredential: UserCredential) => {
       try {
         if (userCredential.user.displayName)
-          await fetchDataWithCredentials(
-            userCredential,
-            userCredential.user.displayName
-          );
+          await fetchDataWithCredentials(userCredential.user, userCredential.user.displayName);
       } catch (error) {
         throw error;
       }
@@ -120,15 +106,14 @@ const googleSignUp = async () => {
     });
 };
 
-/**
- * Log out
- */
-const logOut = () => {
+
+
+export const logOut = () => {
   signOut(auth);
 };
 
 
-const AuthContext = createContext<AuthContextType>({user: null,  googleSignIn, googleSignUp, EmailPasswordSignIn, EmailPasswordSignUp, logOut});
+const AuthContext = createContext<AuthContextType>({ user: null });
 
 export const AuthContextProvider = ({
   children,
@@ -137,11 +122,17 @@ export const AuthContextProvider = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
- 
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      await fetchData(`/user/${currentUser?.uid}`, { method: 'GET' }).then((response) => {
+        if (!response.length && currentUser && currentUser.displayName)
+          fetchDataWithCredentials(currentUser, currentUser.displayName);
+      });
       setUser(currentUser);
-      if (!user) router.push("/");
+      if (!user) {
+        router.push("/")
+      };
     });
     return unsubscribe;
   }, [user]);
@@ -149,13 +140,8 @@ export const AuthContextProvider = ({
   return (
     <>
       <AuthContext.Provider
-        value = {{
-          user,
-          googleSignIn,
-          googleSignUp,
-          logOut,
-          EmailPasswordSignIn,
-          EmailPasswordSignUp,
+        value={{
+          user
         }}
       >
         {children}
@@ -163,6 +149,8 @@ export const AuthContextProvider = ({
     </>
   );
 };
+
+
 
 export const userAuth = () => {
   return useContext(AuthContext);

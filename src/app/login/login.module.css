@@ -1,4 +1,7 @@
 .login_container {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--orange-color);
   width: 400px;
   max-width: 90%;
@@ -48,18 +51,20 @@
   font-weight: bold;
   font-family: TimeBurner, sans-serif;
   border-radius: 5px;
-  padding: 5px;
+  padding: 10px;
   margin: 5px;
   border: none;
   outline: none;
 }
 
 .login_container-btn {
-  margin: auto;
-  width: fit-content;
-  background-color: #fff;
-  color: #000;
-  padding: 5px;
+  margin: 10px auto;
+  width: 20%;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--orange-color);
+  padding: 10px;
   border-radius: 5px;
   outline: none;
   border: none;
@@ -67,11 +72,6 @@
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s;
-}
-
-.login_container-btn h4 {
-  padding: 0;
-  margin: 0;
 }
 
 .login_container-btn:hover,

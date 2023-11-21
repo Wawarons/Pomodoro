@@ -1,15 +1,14 @@
 "use client";
+import React, { FormEvent, useRef, useState } from "react";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
-import style from "@/app/styles/login.module.css";
-import { userAuth } from "@/app/context/Authcontext";
+import { googleSignUp, googleSignIn, EmailPasswordSignIn, EmailPasswordSignUp } from "@/app/context/Authcontext";
+import style from "@/app/login/login.module.css";
 
 interface AuthComponentProps {
   newUser: boolean
 }
 
-const AuthComponent: React.FC<AuthComponentProps> = ({newUser}) => {
-  const { googleSignUp, googleSignIn, EmailPasswordSignIn, EmailPasswordSignUp } = userAuth();
+const AuthComponent: React.FC<AuthComponentProps> = ({ newUser }) => {
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const passwordConfirmRef = useRef<HTMLInputElement | null>(null);
@@ -47,10 +46,10 @@ const AuthComponent: React.FC<AuthComponentProps> = ({newUser}) => {
     if (emailRef.current?.value && passwordRef.current?.value) {
       try {
         await EmailPasswordSignIn(emailRef.current.value, passwordRef.current.value);
-      }catch(error) {
+      } catch (error) {
         setErrorCredentialsWrong(true);
       }
-    }else{
+    } else {
       setErrorInput(true);
     }
   };
@@ -60,81 +59,90 @@ const AuthComponent: React.FC<AuthComponentProps> = ({newUser}) => {
    */
   const handleEmailPasswordSignUp = async () => {
     if (emailRef.current?.value && usernameRef.current?.value && passwordRef.current?.value && passwordConfirmRef.current?.value) {
-      if(passwordRef.current?.value === passwordConfirmRef.current?.value){
+      if (passwordRef.current?.value === passwordConfirmRef.current?.value) {
         try {
           await EmailPasswordSignUp(emailRef.current.value, passwordRef.current.value, usernameRef.current.value);
-        }catch(error) {
+        } catch (error) {
           setErrorCredentialsWrong(true);
         }
-      }else{
+      } else {
         setErrorConfirmPasswordInput(true);
-        console.log("Wrong password");
       }
-    }else{
+    } else {
       setErrorInput(true);
     }
   };
 
+  const handleFormSign = (event: FormEvent) => {
+    event?.preventDefault();
+    if (newUser) {
+      handleEmailPasswordSignUp();
+    } else {
+      handleEmailPasswordSignIn();
+    }
+  }
+
   return (
     <>
       <div>
-        {errorCredentialsWrong ? <p className={style.error_credentials}>Aucune correspondance trouvé.</p>:null}
-        {/* username */}
-        {newUser ?(<div className={style["login_container-input__item"]}>
-        { errorInput ? <p className={style.error_input}>Email requis</p>:null }
-          <input
-            className={style["login_container-input"]}
-            type="text"
-            name="username"
-            placeholder="Username"
-            ref={usernameRef}
-          />
-        </div>):null}
+        {errorCredentialsWrong ? <p className={style.error_credentials}>Aucune correspondance trouvé.</p> : null}
+        <form onSubmit={handleFormSign}>
+          {/* username */}
+          {newUser ? (<div className={style["login_container-input__item"]}>
+            {errorInput ? <p className={style.error_input}>Email requis</p> : null}
+            <input
+              className={style["login_container-input"]}
+              type="text"
+              name="username"
+              placeholder="Username"
+              ref={usernameRef}
+            />
+          </div>) : null}
 
-        {/* Email */}
-        <div className={style["login_container-input__item"]}>
-        { errorInput ? <p className={style.error_input}>Email requis</p>:null }
-          <input
-            className={style["login_container-input"]}
-            type="email"
-            name="email"
-            placeholder="Email"
-            ref={emailRef}
-          />
-        </div>
-        {/* Password */}
-        <div className={style["login_container-input__item"]}>
-        { errorInput ? <p className={style.error_input}>Mot de passe requis</p>:null }
-          <input
-            className={style["login_container-input"]}
-            type="password"
-            name="password"
-            placeholder="Password"
-            ref={passwordRef}
-          />
-        </div>
-
-        {/* Confirm password */}
-        {newUser ? (
+          {/* Email */}
           <div className={style["login_container-input__item"]}>
-          { errorInput ? <p className={style.error_input}>Confirm password required</p>:null }
-          {errorConfirmPasswordInput ? <p className={style.error_input}>Mot de passe différent</p>:null}
+            {errorInput ? <p className={style.error_input}>Email requis</p> : null}
+            <input
+              className={style["login_container-input"]}
+              type="email"
+              name="email"
+              placeholder="Email"
+              ref={emailRef}
+            />
+          </div>
+          {/* Password */}
+          <div className={style["login_container-input__item"]}>
+            {errorInput ? <p className={style.error_input}>Mot de passe requis</p> : null}
             <input
               className={style["login_container-input"]}
               type="password"
-              name="confirm-password"
-              placeholder="Confirm password"
-              ref={passwordConfirmRef}
+              name="password"
+              placeholder="Password"
+              ref={passwordRef}
             />
           </div>
-        ):null}
-        {/* Submit */}
-        <div
-          className={style["login_container-btn"]}
-          onClick={newUser ? handleEmailPasswordSignUp:handleEmailPasswordSignIn}
-        >
-          <h4>{newUser ? 'Sign up':'Sign in'}</h4>
-        </div>
+
+          {/* Confirm password */}
+          {newUser ? (
+            <div className={style["login_container-input__item"]}>
+              {errorInput ? <p className={style.error_input}>Confirm password required</p> : null}
+              {errorConfirmPasswordInput ? <p className={style.error_input}>Mot de passe différent</p> : null}
+              <input
+                className={style["login_container-input"]}
+                type="password"
+                name="confirm-password"
+                placeholder="Confirm password"
+                ref={passwordConfirmRef}
+              />
+            </div>
+          ) : null}
+          {/* Submit */}
+          <input type="submit"
+            className={style["login_container-btn"]}
+            onClick={handleFormSign}
+            value={newUser ? 'Sign up' : 'Sign in'}
+          />
+        </form>
       </div>
 
       <div className={style["login_container-other-method"]}>
@@ -144,7 +152,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({newUser}) => {
           alt="login with google"
           width={150}
           height={50}
-          onClick={newUser ? handleGoogleSignUp:handleGoogleSignIn}
+          onClick={newUser ? handleGoogleSignUp : handleGoogleSignIn}
         />
       </div>
     </>

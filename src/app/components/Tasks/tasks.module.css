@@ -130,12 +130,11 @@
 }
 
 .tasks-container__input-btn {
-  background: #ffffff;
   outline: none;
   appearance: none;
   border: none;
   border-radius: 3px;
-  color: var(--orange-color);
+  backdrop-filter: blur(15px);
   padding: 3px 8px;
   margin: 0 5px;
   cursor: pointer;

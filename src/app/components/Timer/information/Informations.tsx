@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import style from "@/app/styles/informations.module.css";
+import style from "./informations.module.css";
 
 /**
  * Informations component

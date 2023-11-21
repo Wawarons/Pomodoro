@@ -1,8 +1,9 @@
 'use client'
-import React, {useEffect, useState} from 'react'
-import AuthComponent from '../components/Auth/AuthComponent';
-import style from '@/app/styles/login.module.css'
+import React, {useState} from 'react'
+import AuthComponent from '@/app/components/Auth/AuthComponent';
 import { userAuth } from '../context/Authcontext';
+import style from './login.module.css';
+import HomeButton from '../components/utilities/HomeButton';
 
 const Login = () => {
 
@@ -10,6 +11,8 @@ const Login = () => {
   const [newUser, setNewUser] = useState<boolean>(false);
 
   return (
+    <>
+    <HomeButton />
     <div className={style.login_container}>
       {
         !user ?
@@ -22,6 +25,7 @@ const Login = () => {
         ):null
       }
     </div>
+    </>
   )
 }
 

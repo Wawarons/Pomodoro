@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import style from "@/app/styles/timer.module.css";
+import { TimeContext } from "@/app/context/TimerContext";
+import ClickOutside from "@/app/components/utilities/ClickOutside";
+import Informations from "./information/Informations";
+import { TbCircleLetterX } from "react-icons/tb";
 import { PiBookOpenTextLight, PiCoffeeLight } from "react-icons/pi";
 import { SiBuymeacoffee } from "react-icons/si";
 import { HiOutlineInformationCircle } from "react-icons/hi";
-import { TimeContext } from "@/app/context/TimerContext";
-import Informations from "./Informations";
-import { TbCircleLetterX } from "react-icons/tb";
+import style from "./timer.module.css";
+import { fetchData } from "../utilities/FetchData";
 
 /**
  * Timer component
@@ -19,7 +21,7 @@ const Timer = () => {
     throw new Error("ShowTimeComponent must be used within Provider");
 
   const { timer, updateTimer } = context;
-  const [timeLeft, setTimeLeft] = useState<number>(timer.actualTime * 60);
+  const [timeLeft, setTimeLeft] = useState(timer.actualTime * 60);
   const stepSession = timer.stepSession;
 
   /**
@@ -27,24 +29,24 @@ const Timer = () => {
    * @param step new step value
    */
   const updateDisplayTime = (step: "work" | "short break" | "long break") => {
-    if (step === "work") {
-      setTimeLeft(timer.workTime * 60);
-    } else if (step === "short break") {
-      setTimeLeft(timer.shortBreakTime * 60);
-    } else {
-      setTimeLeft(timer.longBreakTime * 60);
-    }
+
+    if (step === "work") setTimeLeft(timer.workTime * 60);
+
+    else if (step === "short break") setTimeLeft(timer.shortBreakTime * 60);
+
+    else setTimeLeft(timer.longBreakTime * 60);
+
   };
 
   //Set up the timer if true launch else stop the timer
   useEffect(() => {
     //If the timer is launch
     if (timer.sessionStart) {
-      //Will time not finish && not break
+      //While time not finish && not break
       if (timeLeft && !timer.isBreak) {
         const interval = setInterval(() => {
           setTimeLeft(timeLeft - 1);
-          updateTimer({actualTime: (timeLeft-1)/60});
+          updateTimer({ actualTime: (timeLeft - 1) / 60 });
         }, 1000);
 
         return () => {
@@ -67,14 +69,17 @@ const Timer = () => {
           //Else if is user has finish is break (short or long) set timer with timer.workTime
           setTimeLeft(timer.workTime * 60);
         }
-        if (timer.stepSession === "work")
+
+        if (timer.stepSession === "work") {
           updateTimer({
             stepSession:
               (timer.sessionDo + 1) % 4 === 0 ? "long break" : "short break",
             sessionDo: timer.sessionDo + 1,
             isBreak: true,
-          });
-        else updateTimer({ stepSession: "work", isBreak: true });
+          })
+          
+        }
+        else { updateTimer({ stepSession: "work", isBreak: true }) }
       }
     } else {
       updateDisplayTime(stepSession);
@@ -108,7 +113,7 @@ const Timer = () => {
 
   return (
     <>
-      {showInformations ? <Informations /> : null}
+      {showInformations ? <ClickOutside onOutsideClick={() => setShowInformations(false)}><Informations /></ClickOutside> : null}
       <div className={style["time-container"]}>
         <div
           className={style.informations}
@@ -142,7 +147,6 @@ const Timer = () => {
           </div>
         </div>
       </div>
-      <hr className={style.divider} />
     </>
   );
 };

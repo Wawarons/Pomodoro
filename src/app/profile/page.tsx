@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import HomeButton from "../components/utilities/HomeButton";
+import ReportCircle from "../components/utilities/ReportCircle";
 import { userAuth } from "../context/Authcontext";
-import style from '@/app/styles/profile.module.css'
-import HomeButton from "../components/HomeButton";
-import ReportCircle from "../components/ReportCircle";
+import {logOut} from '@/app/context/Authcontext';
+import style from './profile.module.css';
 
 type userData = {
   email: string,
@@ -23,14 +24,14 @@ const Profile = () => {
         });
       }
     }
-    fetchData();
+    if(user && userData === null) fetchData();
   }, [user, userData]);
 
 
   return (
     <>
     <HomeButton />
-    <div className={style.logout}>Log out</div>
+    <div className={style.logout} onClick={()=>logOut()}>Log out</div>
     <h1 className={style.profile__title}>Profile</h1>
     <div className={style.profile_container}>
       {userData ? (
